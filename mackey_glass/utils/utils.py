@@ -199,11 +199,11 @@ def plot_predictions(predictions_teacher, true_values_teacher, predictions_basel
     plt.rcParams['font.size'] = 18  # Set general font size
     '''
 
-    # Create a figure with 4 subplots for Discretization, Teacher, Baseline, and Student models
-    fig, ax = plt.subplots(1, 4, figsize=(12, 3))
+    # Create a figure with 2 rows and a total of 7 subplots for Discretization, Teacher, Baseline, and Student models
+    fig, ax = plt.subplots(2, 4, figsize=(12, 3))
 
     # Plot Discretization Process (Original vs Discretized y_train) using twinx() for y-axes
-    ax_left = ax[0]  # Left axis for original data
+    ax_left = ax[0][0]  # Left axis for original data
     ax_right = ax_left.twinx()  # Right axis for discretized data
 
     # Plot the original data on the left y-axis
@@ -224,33 +224,54 @@ def plot_predictions(predictions_teacher, true_values_teacher, predictions_basel
     ax_left.legend(handles=[original_line, discretized_line], loc="lower right")
 
     # Plot Teacher predictions
-    ax[1].plot(true_values_teacher, label="True Values", color='blue')
+    ax[0][1].plot(true_values_teacher, label="True Values", color='blue')
     # ax[1].plot(predictions_teacher, label="Predictions", color='red')
-    ax[1].set_title("Teacher", fontsize=18)
-    ax[1].set_xlabel("Time", fontsize=18)
-    ax[1].set_ylabel("Amplitude", fontsize=18)
-    ax[1].legend(loc="lower right")
+    ax[0][1].set_title("Teacher", fontsize=18)
+    ax[0][1].set_xlabel("Time", fontsize=18)
+    ax[0][1].set_ylabel("Amplitude", fontsize=18)
+    ax[0][1].legend(loc="lower right")
 
     # Plot Baseline predictions
-    ax[2].plot(true_values_baseline, label="True Values", color='blue')
+    ax[0][2].plot(true_values_baseline, label="True Values", color='blue')
     # ax[2].plot(predictions_baseline, label="Predictions", color='red')
-    ax[2].set_title("Baseline", fontsize=18)
-    ax[2].set_xlabel("Time", fontsize=18)
-    ax[2].set_ylabel("Amplitude", fontsize=18)
-    ax[2].legend(loc="lower right")
+    ax[0][2].set_title("Baseline", fontsize=18)
+    ax[0][2].set_xlabel("Time", fontsize=18)
+    ax[0][2].set_ylabel("Amplitude", fontsize=18)
+    ax[0][2].legend(loc="lower right")
 
     # Plot Student predictions
-    ax[3].plot(true_values_student, label="True Values", color='blue')
+    ax[0][3].plot(true_values_student, label="True Values", color='blue')
     # ax[3].plot(predictions_student, label="Predictions", color='red')
-    ax[3].set_title("Student (FGL)", fontsize=18)
-    ax[3].set_xlabel("Time", fontsize=18)
-    ax[3].set_ylabel("Amplitude", fontsize=18)
-    ax[3].legend(loc="lower right")
+    ax[0][3].set_title("Student (FGL)", fontsize=18)
+    ax[0][3].set_xlabel("Time", fontsize=18)
+    ax[0][3].set_ylabel("Amplitude", fontsize=18)
+    ax[0][3].legend(loc="lower right")
     
     fig.text(0.1285, 0.02, '(a)', ha='center', fontsize=18)  # Under subplot 1 (Discretization)
     fig.text(0.385, 0.02, '(b)', ha='center', fontsize=18)   # Under subplot 2 (Teacher)
     fig.text(0.64, 0.02, '(c)', ha='center', fontsize=18)   # Under subplot 3 (Baseline)
     fig.text(0.89, 0.02, '(d)', ha='center', fontsize=18)   # Under subplot 4 (Student)
+
+    # Plot red Teacher predictions
+    ax[1][1].plot(predictions_teacher, label="Predictions", color='red')
+    ax[1][1].set_title("Teacher", fontsize=18)
+    ax[1][1].set_xlabel("Time", fontsize=18)
+    ax[1][1].set_ylabel("Amplitude", fontsize=18)
+    ax[1][1].legend(loc="lower right")
+
+    # Plot red Baseline predictions
+    ax[1][2].plot(predictions_baseline, label="Predictions", color='red')
+    ax[1][2].set_title("Baseline", fontsize=18)
+    ax[1][2].set_xlabel("Time", fontsize=18)
+    ax[1][2].set_ylabel("Amplitude", fontsize=18)
+    ax[1][2].legend(loc="lower right")
+
+    # Plot red Student predictions
+    ax[1][3].plot(predictions_student, label="Predictions", color='red')
+    ax[1][3].set_title("Student (FGL)", fontsize=18)
+    ax[1][3].set_xlabel("Time", fontsize=18)
+    ax[1][3].set_ylabel("Amplitude", fontsize=18)
+    ax[1][3].legend(loc="lower right")
 
 
     # Adjust layout and show the plot
@@ -280,7 +301,7 @@ if __name__ == "__main__":
         beta=0.2,
         gamma=0.1,
         dt=1.0,
-        splits=(8000.0, 2000.0),
+        splits=(1000.0, 500.0),
         start_offset=0.0,
         seed_id=0
     )
