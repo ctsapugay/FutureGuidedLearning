@@ -190,15 +190,17 @@ def KL(outputs, logits, alpha, kl, T):
     return (1-alpha)*kl(F.log_softmax(outputs / T, dim=1), F.softmax(logits / T, dim=1)) * T**2
 
 def plot_predictions(predictions_teacher, true_values_teacher, predictions_baseline, true_values_baseline, predictions_student, true_values_student, original_data_train, y_train):
+    '''
     # Configure font
     font_manager.fontManager.addfont('C:/Users/gunak/Downloads/helvetica-255/Helvetica.ttf')
     prop = font_manager.FontProperties(fname='C:/Users/gunak/Downloads/helvetica-255/Helvetica.ttf')
     plt.rcParams['font.family'] = 'Helvetica'
     plt.rcParams['font.sans-serif'] = prop.get_name()
     plt.rcParams['font.size'] = 18  # Set general font size
+    '''
 
     # Create a figure with 4 subplots for Discretization, Teacher, Baseline, and Student models
-    fig, ax = plt.subplots(1, 4, figsize=(24, 6))
+    fig, ax = plt.subplots(1, 4, figsize=(12, 3))
 
     # Plot Discretization Process (Original vs Discretized y_train) using twinx() for y-axes
     ax_left = ax[0]  # Left axis for original data
@@ -223,7 +225,7 @@ def plot_predictions(predictions_teacher, true_values_teacher, predictions_basel
 
     # Plot Teacher predictions
     ax[1].plot(true_values_teacher, label="True Values", color='blue')
-    ax[1].plot(predictions_teacher, label="Predictions", color='red')
+    # ax[1].plot(predictions_teacher, label="Predictions", color='red')
     ax[1].set_title("Teacher", fontsize=18)
     ax[1].set_xlabel("Time", fontsize=18)
     ax[1].set_ylabel("Amplitude", fontsize=18)
@@ -231,7 +233,7 @@ def plot_predictions(predictions_teacher, true_values_teacher, predictions_basel
 
     # Plot Baseline predictions
     ax[2].plot(true_values_baseline, label="True Values", color='blue')
-    ax[2].plot(predictions_baseline, label="Predictions", color='red')
+    # ax[2].plot(predictions_baseline, label="Predictions", color='red')
     ax[2].set_title("Baseline", fontsize=18)
     ax[2].set_xlabel("Time", fontsize=18)
     ax[2].set_ylabel("Amplitude", fontsize=18)
@@ -239,7 +241,7 @@ def plot_predictions(predictions_teacher, true_values_teacher, predictions_basel
 
     # Plot Student predictions
     ax[3].plot(true_values_student, label="True Values", color='blue')
-    ax[3].plot(predictions_student, label="Predictions", color='red')
+    # ax[3].plot(predictions_student, label="Predictions", color='red')
     ax[3].set_title("Student (FGL)", fontsize=18)
     ax[3].set_xlabel("Time", fontsize=18)
     ax[3].set_ylabel("Amplitude", fontsize=18)
@@ -259,3 +261,60 @@ def plot_predictions(predictions_teacher, true_values_teacher, predictions_basel
 
 # Example usage:
 # plot_predictions(predictions_teacher, true_values_teacher, predictions_baseline, true_values_baseline, predictions_student, true_values_student, original_data_train, y_train)
+
+
+if __name__ == "__main__":
+    # Parameters for dataset generation and preprocessing
+    tau = 17.0
+    constant_past = 1.2
+    lookback_window = 10
+    forecasting_horizon = 5
+    num_bins = 50
+    test_size = 0.2
+
+    # Generate the Mackey-Glass dataset
+    dataset = MackeyGlass(
+        tau=tau,
+        constant_past=constant_past,
+        nmg=10,
+        beta=0.2,
+        gamma=0.1,
+        dt=1.0,
+        splits=(8000.0, 2000.0),
+        start_offset=0.0,
+        seed_id=0
+    )
+
+    # Convert to (input, target) pairs
+    data = [dataset[i] for i in range(len(dataset) - forecasting_horizon)]
+
+    # Create train/test loaders and get discretized y_train
+    train_loader, test_loader, original_data_test, y_test = create_time_series_dataset(
+        data,
+        lookback_window=lookback_window,
+        forecasting_horizon=forecasting_horizon,
+        num_bins=num_bins,
+        test_size=test_size,
+        MSE=False
+    )
+
+    # Extract original y_train from training set
+    original_data_train = np.array([point[1] for point in train_loader.dataset])
+    y_train = np.array([point[1] for point in train_loader.dataset])
+
+    # Dummy predictions for plotting
+    predictions_teacher = y_train
+    predictions_baseline = y_train
+    predictions_student = y_train
+
+    # Plot it
+    plot_predictions(
+        predictions_teacher,
+        y_train,
+        predictions_baseline,
+        y_train,
+        predictions_student,
+        y_train,
+        original_data_train,
+        y_train
+    )
