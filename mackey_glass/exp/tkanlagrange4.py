@@ -1,5 +1,5 @@
 '''
-Tkann model with four legendre layers.
+Tkann model with four lagrange layers.
 Activation function tanh used because relu and sigmoid not optimal for legendre polynomial.
 '''
 
@@ -16,18 +16,18 @@ from utils import MackeyGlass, create_time_series_dataset, plot_predictions
 torch.random.manual_seed(0)
 
 class TKANModel(nn.Sequential):
-    def __init__(self, input_size, output_size, hp=1):
+    def __init__(self, input_size, output_size, hp):
        super(TKANModel, self).__init__()
-       self.tl1 = tnn.LegendreKan(input_size, hp, order=4)  # tkan layer 1
-       self.tl2 = tnn.LegendreKan(hp, hp, order=4)  # tkan layer 2
-       self.tl3 = tnn.LegendreKan(hp, hp, order=4)  # tkan layer 3
-       self.tlfinal = tnn.LegendreKan(hp, output_size, order=3)  # final tkan layer 
+       self.tl1 = tnn.LagrangeKan(input_size, hp)  # tkan layer 1
+       self.tl2 = tnn.LagrangeKan(hp, hp)  # tkan layer 2
+       self.tl3 = tnn.LagrangeKan(hp, hp)  # tkan layer 3
+       self.tlfinal = tnn.LagrangeKan(hp, output_size)  # final tkan layer 
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
-        x = F.tanh(self.tl1(x))
-        x = F.tanh(self.tl2(x))
-        x = F.tanh(self.tl3(x))
+        x = self.tl1(x)
+        x = self.tl2(x)
+        x = self.tl3(x)
         out = self.tlfinal(x)
         return out
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     )
 
     # Model setup
-    model = TKANModel(input_size=lookback_window, output_size=1, hp=5)
+    model = TKANModel(input_size=lookback_window, output_size=1, hp=3)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
