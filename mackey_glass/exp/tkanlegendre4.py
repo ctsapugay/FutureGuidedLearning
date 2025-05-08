@@ -1,3 +1,8 @@
+'''
+Tkann model with four legendre layers.
+Activation function tanh used because relu and sigmoid not optimal for legendre polynomial.
+'''
+
 import math
 import torch
 import torch.nn as nn
@@ -14,16 +19,21 @@ class TKANModel(nn.Sequential):
     def __init__(self, input_size, output_size):
        super(TKANModel, self).__init__()
        self.tl1 = tnn.LegendreKan(input_size, 1, order=4)  # tkan layer 1
-       self.tl2 = tnn.LegendreKan(1, output_size, order=3)  # tkan layer 2
+       self.tl2 = tnn.LegendreKan(1, 1, order=4)  # tkan layer 2
+       self.tl3 = tnn.LegendreKan(1, 1, order=4)  # tkan layer 3
+       self.tlfinal = tnn.LegendreKan(1, output_size, order=3)  # final tkan layer 
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
-        x = F.relu(self.tl1(x))
-        out = self.tl2(x)
+        x = F.tanh(self.tl1(x))
+        x = F.tanh(self.tl2(x))
+        x = F.tanh(self.tl3(x))
+        out = self.tlfinal(x)
         return out
 
 def train_model(model, dataloader, criterion, optimizer, epochs=10):
     model.train()
+    loss_values = []
     for epoch in range(epochs):
         total_loss = 0.0
         for inputs, targets in dataloader:
@@ -37,7 +47,9 @@ def train_model(model, dataloader, criterion, optimizer, epochs=10):
             optimizer.step()
 
             total_loss += loss.item()
+        loss_values.append(total_loss)
         print(f"Epoch {epoch+1}/{epochs}, Loss: {total_loss:.4f}")
+    return loss_values
 
 def evaluate_model(model, dataloader):
     model.eval()
@@ -92,7 +104,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Train and evaluate
-    train_model(model, train_loader, criterion, optimizer, epochs=epochs)
+    loss_values = train_model(model, train_loader, criterion, optimizer, epochs=epochs)
     predictions, true_vals = evaluate_model(model, test_loader)
 
     # Visualization
@@ -105,6 +117,14 @@ if __name__ == "__main__":
         predictions, true_vals,
         original_data_train, y_train
     )
+
+    # plot the loss
+    plt.plot(loss_values)
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Training Loss over Epochs")
+    plt.show()
+
 
     # plot kan model
     fig = plt.figure(figsize=(6, 10))
