@@ -99,7 +99,7 @@ if __name__ == "__main__":
     )
 
     # Model setup
-    model = TKANModel(input_size=lookback_window, output_size=1, hp=5)
+    model = TKANModel(input_size=lookback_window, output_size=1, hp=3)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 

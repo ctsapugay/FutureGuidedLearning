@@ -1,6 +1,6 @@
 '''
-Tkann model with four lagrange layers.
-Activation function tanh used because relu and sigmoid not optimal for legendre polynomial.
+Tkann model with four chebyshev layers.
+Activation function tanh 
 '''
 
 import math
