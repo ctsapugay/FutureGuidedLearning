@@ -22,6 +22,16 @@ def generate_composite_signal(Fs=100, duration=1.0):
 
     return t, y, (y1, y2, y3)
 
+def get_dataset_for_tkan(Fs=100, duration=1.0):
+    """
+    Returns composite signal as (timesteps, features) array for Tkan
+    """
+    t, y, _ = generate_composite_signal(Fs, duration)
+    # Reshape y to (timesteps, features)
+    y = y.reshape(-1, 1)
+    print(y)
+    return y
+
 def apply_fft(y, Fs):
     """
     Perform FFT and return frequency components and magnitudes
@@ -37,15 +47,6 @@ def reconstruct_signal(y_fft):
     Reconstruct signal from FFT using inverse FFT
     """
     return np.real(fftpack.ifft(y_fft))
-
-def get_dataset_for_tkan(Fs=100, duration=1.0):
-    """
-    Returns composite signal as (timesteps, features) array for Tkan or similar models.
-    """
-    t, y, _ = generate_composite_signal(Fs, duration)
-    # Reshape y to (timesteps, features)
-    y = y.reshape(-1, 1)
-    return y
 
 def plot_all(t, y, freqs, magnitudes, y_reconstructed, components):
     """
