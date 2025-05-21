@@ -79,15 +79,11 @@ def plot_all(t, y, freqs, magnitudes, y_reconstructed, components):
 
 
 if __name__ == "__main__":
-    Fs = 100  # Sampling rate
+    Fs = 100  # sampling rate
     t, y, components = generate_composite_signal(Fs)
     freqs, magnitudes, y_fft = apply_fft(y, Fs)
     y_reconstructed = reconstruct_signal(y_fft)
     plot_all(t, y, freqs, magnitudes, y_reconstructed, components)
 
-    # Get model-ready data
     dataset = get_dataset_for_tkan(Fs)
     print("Dataset shape for Tkan:", dataset.shape)
-
-    # Optionally save it to a file
-    np.save("fourier_composite_signal.npy", dataset)
