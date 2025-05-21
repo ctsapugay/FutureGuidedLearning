@@ -38,6 +38,15 @@ def reconstruct_signal(y_fft):
     """
     return np.real(fftpack.ifft(y_fft))
 
+def get_dataset_for_tkan(Fs=100, duration=1.0):
+    """
+    Returns composite signal as (timesteps, features) array for Tkan or similar models.
+    """
+    t, y, _ = generate_composite_signal(Fs, duration)
+    # Reshape y to (timesteps, features)
+    y = y.reshape(-1, 1)
+    return y
+
 def plot_all(t, y, freqs, magnitudes, y_reconstructed, components):
     """
     Plot time-domain signal, frequency-domain, and reconstructed signal
@@ -75,3 +84,10 @@ if __name__ == "__main__":
     freqs, magnitudes, y_fft = apply_fft(y, Fs)
     y_reconstructed = reconstruct_signal(y_fft)
     plot_all(t, y, freqs, magnitudes, y_reconstructed, components)
+
+    # Get model-ready data
+    dataset = get_dataset_for_tkan(Fs)
+    print("Dataset shape for Tkan:", dataset.shape)
+
+    # Optionally save it to a file
+    np.save("fourier_composite_signal.npy", dataset)
